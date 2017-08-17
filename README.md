@@ -11,10 +11,7 @@ The file `kotlin/Annotations.kt` contains the declarations of discussed annotati
 The section "Reflection: Introspecting Kotlin Objects at Runtime" of the book describes the implementation of serializer and deserializer.
 The files `main/kotlin/serialization/Serializer.kt` and `main/kotlin/deserialization/Deserializer.kt` contain the source code.
 
-We highly encourage you to do the following exercises after reading the text.
-The first exercise can be started after reading the description of the serializer, to be exact after reading the section "Customizing Serialization with Annotations".
-The second exercise is intended to be started after reading the whole chapter.
-Solving these exercises will help you to understand the concepts better and lets you practice right away.
+The following exercises have been implemented in this version of jKid:
 
 1. Support the annotation `DateFormat`, that allows to annotate the date property with `@DateFormat("dd-MM-yyyy")` specifying the date format as an argument.
 The testing example showing its usage is in the file `test/kotlin/exercise/DataFormatAnnotation.kt`.
