@@ -58,9 +58,45 @@ fun Seed.createSeedForType(paramType: Type, isList: Boolean): Seed {
         return ObjectListSeed(elementType, classInfoCache)
     }
     if (isList) throw JKidException("Object of the type ${paramType.typeName} expected, not an array")
+    if (Map::class.java.isAssignableFrom(paramClass)) {
+        if (isList) throw JKidException("Object of the type ${paramType.typeName} expected, not an array")
+        val parameterizedType = paramType as? ParameterizedType
+                ?: throw UnsupportedOperationException("Unsupported parameter type $this")
+        val typeArgs = parameterizedType.actualTypeArguments
+        if (typeArgs.size != 2)  {
+            throw UnsupportedOperationException("Unsupported parameter type $this")
+        } else if (typeArgs[0] != String::class.java) {
+            throw UnsupportedOperationException("Map's key must be string")
+        }
+        return MapSeed(typeArgs[1], classInfoCache)
+    }
     return ObjectSeed(paramClass.kotlin, classInfoCache)
 }
 
+class MapSeed(
+        val valueType: Type,
+        override val classInfoCache: ClassInfoCache
+) : Seed {
+    private val values = mutableMapOf<String, Any?>()
+    private val seeds = mutableMapOf<String, Seed>()
+
+    override fun setSimpleProperty(propertyName: String, value: Any?) {
+        if (seeds.contains(propertyName) || values.contains(propertyName)) {
+            throw JKidException("Key $propertyName is a duplicate")
+        }
+        values[propertyName] = value
+    }
+
+    override fun createCompositeProperty(propertyName: String, isList: Boolean) : JsonObject {
+        if (seeds.contains(propertyName) || values.contains(propertyName)) {
+            throw JKidException("Key $propertyName is a duplicate")
+        }
+        return createSeedForType(valueType, isList).apply { seeds[propertyName] = this }
+    }
+
+    override fun spawn(): Map<String, Any?> =
+            values + seeds.mapValues { it.value.spawn() }
+}
 
 class ObjectSeed<out T: Any>(
         targetClass: KClass<T>,

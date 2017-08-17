@@ -18,3 +18,7 @@ annotation class DeserializeInterface(val targetClass: KClass<out Any>)
 
 @Target(AnnotationTarget.PROPERTY)
 annotation class CustomSerializer(val serializerClass: KClass<out ValueSerializer<*>>)
+
+@Target(AnnotationTarget.PROPERTY)
+annotation class DateFormat(val format: String)
+
