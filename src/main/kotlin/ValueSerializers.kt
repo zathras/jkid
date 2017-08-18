@@ -76,8 +76,14 @@ object StringSerializer : ValueSerializer<String?> {
     override fun toJsonValue(value: String?) = value
 }
 
-class DateSerializer(format : String) : ValueSerializer<Date> {
+class DateSerializer(format : String, timezone: String?) : ValueSerializer<Date> {
     private val simpleDateFormat = SimpleDateFormat(format)
+    
+    init {
+	if (timezone != "") {
+	    simpleDateFormat.setTimeZone(TimeZone.getTimeZone(timezone))
+	}
+    }
 
     override fun toJsonValue(value: Date): Any? =
             simpleDateFormat.format(value)

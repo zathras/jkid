@@ -20,5 +20,5 @@ annotation class DeserializeInterface(val targetClass: KClass<out Any>)
 annotation class CustomSerializer(val serializerClass: KClass<out ValueSerializer<*>>)
 
 @Target(AnnotationTarget.PROPERTY)
-annotation class DateFormat(val format: String)
+annotation class DateFormat(val format: String, val timezone: String = "")
 
