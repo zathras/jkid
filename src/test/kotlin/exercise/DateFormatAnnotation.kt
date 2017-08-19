@@ -26,3 +26,21 @@ class DateFormatTest {
         assertEquals(value, deserialize(json))
     }
 }
+
+data class TimeWithZone(
+    @DateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz", "GMT") val testDate: Date
+)
+
+class DateFormatTestWithTimezone {
+    private val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS zzz")
+    private val value = TimeWithZone(df.parse("2017-08-18 17:25:26.632 PDT"))
+    private val json = """{"testDate": "2017-08-19 00:25:26.632 GMT"}"""
+
+    @Test fun testSerialization() {
+        assertEquals(json, serialize(value))
+    }
+
+    @Test fun testDeserialization() {
+        assertEquals(value, deserialize(json))
+    }
+}
