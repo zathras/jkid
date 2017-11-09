@@ -1,4 +1,4 @@
-package ru.yole.jkid.exercise
+package ru.yole.jkid
 
 import org.junit.Ignore
 import org.junit.Test

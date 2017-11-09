@@ -26,9 +26,9 @@ fun <T: Any> deserialize(json: Reader, targetClass: KClass<T>): T {
 interface JsonObject {
     fun setSimpleProperty(propertyName: String, value: Any?)
 
-    fun createObject(propertyName: String): JsonObject
+    fun createObject(propertyName: String): JsonObject?
 
-    fun createArray(propertyName: String): JsonObject
+    fun createArray(propertyName: String): JsonObject?
 }
 
 interface Seed: JsonObject {
@@ -36,7 +36,7 @@ interface Seed: JsonObject {
 
     fun spawn(): Any?
 
-    fun createCompositeProperty(propertyName: String, isList: Boolean): JsonObject
+    fun createCompositeProperty(propertyName: String, isList: Boolean): JsonObject?
 
     override fun createObject(propertyName: String) = createCompositeProperty(propertyName, false)
 
@@ -113,11 +113,16 @@ class ObjectSeed<out T: Any>(
 
     override fun setSimpleProperty(propertyName: String, value: Any?) {
         val param = classInfo.getConstructorParameter(propertyName)
-        valueArguments[param] = classInfo.deserializeConstructorArgument(param, value)
+        if (param != null) {
+            valueArguments[param] = classInfo.deserializeConstructorArgument(param, value)
+        }
     }
 
-    override fun createCompositeProperty(propertyName: String, isList: Boolean): Seed {
+    override fun createCompositeProperty(propertyName: String, isList: Boolean): Seed? {
         val param = classInfo.getConstructorParameter(propertyName)
+        if (param == null) {
+            return null
+        }
         val deserializeAs = classInfo.getDeserializeClass(propertyName)
         val seed = createSeedForType(
                 deserializeAs ?: param.type.javaType, isList)

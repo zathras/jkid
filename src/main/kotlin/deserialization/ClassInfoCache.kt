@@ -24,6 +24,7 @@ class ClassInfo<T : Any>(cls: KClass<T>) {
     private val jsonNameToParamMap = hashMapOf<String, KParameter>()
     private val paramToSerializerMap = hashMapOf<KParameter, ValueSerializer<out Any?>>()
     private val jsonNameToDeserializeClassMap = hashMapOf<String, Class<out Any>?>()
+    private val ignoreExtensions = cls.findAnnotation<IgnoreExtensions>() != null
 
     init {
         constructor.parameters.forEach { cacheDataForParameter(cls, it) }
@@ -46,8 +47,13 @@ class ClassInfo<T : Any>(cls: KClass<T>) {
         paramToSerializerMap[param] = valueSerializer
     }
 
-    fun getConstructorParameter(propertyName: String): KParameter = jsonNameToParamMap[propertyName]
-            ?: throw JKidException("Constructor parameter $propertyName is not found for class $className")
+    fun getConstructorParameter(propertyName: String): KParameter? {
+        val result = jsonNameToParamMap[propertyName]
+        if (result == null && !ignoreExtensions) {
+            throw JKidException("Constructor parameter $propertyName is not found for class $className")
+        }
+        return result
+    }
 
     fun getDeserializeClass(propertyName: String) = jsonNameToDeserializeClassMap[propertyName]
 

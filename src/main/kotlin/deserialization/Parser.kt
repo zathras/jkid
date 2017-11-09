@@ -13,7 +13,7 @@ class Parser(reader: Reader, val rootObject: JsonObject) {
         }
     }
 
-    private fun parseObjectBody(JsonObject: JsonObject) {
+    private fun parseObjectBody(JsonObject: JsonObject?) {
         parseCommaSeparated(Token.RBRACE) { token ->
             if (token !is Token.StringValue) {
                 throw MalformedJSONException("Unexpected token $token")
@@ -25,7 +25,7 @@ class Parser(reader: Reader, val rootObject: JsonObject) {
         }
     }
 
-    private fun parseArrayBody(currentObject: JsonObject, propName: String) {
+    private fun parseArrayBody(currentObject: JsonObject?, propName: String) {
         parseCommaSeparated(Token.RBRACKET) { token ->
             parsePropertyValue(currentObject, propName, token)
         }
@@ -47,18 +47,18 @@ class Parser(reader: Reader, val rootObject: JsonObject) {
         }
     }
 
-    private fun parsePropertyValue(currentObject: JsonObject, propName: String, token: Token) {
+    private fun parsePropertyValue(currentObject: JsonObject?, propName: String, token: Token) {
         when (token) {
             is Token.ValueToken ->
-                currentObject.setSimpleProperty(propName, token.value)
+                currentObject?.setSimpleProperty(propName, token.value)
 
             Token.LBRACE -> {
-                val childObj = currentObject.createObject(propName)
+                val childObj = currentObject?.createObject(propName)
                 parseObjectBody(childObj)
             }
 
             Token.LBRACKET -> {
-                val childObj = currentObject.createArray(propName)
+                val childObj = currentObject?.createArray(propName)
                 parseArrayBody(childObj, propName)
             }
 

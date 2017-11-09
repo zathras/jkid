@@ -22,3 +22,10 @@ annotation class CustomSerializer(val serializerClass: KClass<out ValueSerialize
 @Target(AnnotationTarget.PROPERTY)
 annotation class DateFormat(val format: String, val timezone: String = "")
 
+/**
+ * When deserializing a class with this annotation, ignore any properties
+ * in the JSON stream that are not found in the target class.  This allows the protocol
+ * to be extended with new fields without breaking old clients.
+ */
+@Target(AnnotationTarget.CLASS)
+annotation class IgnoreExtensions
